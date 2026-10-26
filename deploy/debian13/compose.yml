@@ -1,0 +1,42 @@
+# 与 NapNeko 官方 AstrBot + NapCat Compose 兼容，默认仅监听宿主机回环地址。
+name: dafeiyu-debian13
+
+services:
+  astrbot:
+    image: soulter/astrbot:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+    ports:
+      - "127.0.0.1:${ASTRBOT_PORT:-6185}:6185"
+    volumes:
+      - ./data:/AstrBot/data
+    networks:
+      - bot
+    # 需要让 AstrBot 容器访问宿主机 Ollama/本地唱歌服务时使用；
+    # 宿主机服务仍须监听 Docker 网关可到达的地址。
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    restart: unless-stopped
+    environment:
+      MODE: astrbot
+      NAPCAT_UID: ${NAPCAT_UID:-1000}
+      NAPCAT_GID: ${NAPCAT_GID:-1000}
+      WEBUI_TOKEN: ${NAPCAT_WEBUI_TOKEN:?请先运行 bootstrap.sh 创建安全 token}
+    ports:
+      - "127.0.0.1:${NAPCAT_PORT:-6099}:6099"
+    volumes:
+      - ./data:/AstrBot/data
+      - ./napcat/config:/app/napcat/config
+      - ./ntqq:/app/.config/QQ
+    networks:
+      - bot
+
+networks:
+  bot:
+    driver: bridge
