@@ -32,7 +32,6 @@ if [[ "${1:---up}" == "--check" ]]; then
 fi
 
 if [[ ! -e .env ]]; then
-  [[ ! -e .env.example ]] || true
   token="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
   uid="${NAPCAT_UID:-${SUDO_UID:-$(id -u)}}"
   gid="${NAPCAT_GID:-${SUDO_GID:-$(id -g)}}"
