@@ -3,7 +3,7 @@
 把 settings/pack.json 里写的东西装进你的 AstrBot：人格、六个插件和它们的设置、
 表情包、记忆、语音，还有 plugins/ 文件夹里的额外插件。可以反复运行，已经装过的会跳过或更新。
 
-用法：双击上一层的「导入大肥鱼.bat」，按提示回答几个问题。
+用法：Windows 双击「导入大肥鱼.bat」；Debian/Linux 运行 bash ./导入大肥鱼.sh。
 测试用：python import_dafeiyu.py --answers 回答.json（回答文件里的 *_file 字段指向放密码或 key 的文本文件）。
 """
 import base64
@@ -45,7 +45,7 @@ def read_secret_file(path, key=None):
     if key:
         for line in lines:
             k, sep, v = line.replace("：", ":", 1).partition(":")  # 中文冒号也认
-            if sep and k.strip().lower() == key:
+            if sep and k.strip().lower() == key.strip().lower():
                 return v.strip()
     return lines[0].strip()
 
@@ -599,9 +599,13 @@ def main():
         else:
             # 测不通就先关着：开着的话她每发一次语音都会报错
             warn(f"语音测试没通过：{why}")
-            if voice == "1" and re.search(r"WinError 2|找不到指定的文件|ffmpeg", why, re.I):
-                warn("Edge 语音要用 ffmpeg 转格式，这台电脑上多半没装。在 PowerShell 里运行 "
-                     "winget install Gyan.FFmpeg 装上，重启 AstrBot，再运行一次本工具。")
+            if voice == "1" and re.search(r"WinError 2|找不到指定的文件|No such file|ffmpeg", why, re.I):
+                if os.name == "nt":
+                    warn("Edge 语音可能缺少 ffmpeg：在 PowerShell 运行 "
+                         "winget install Gyan.FFmpeg，重启 AstrBot，再运行一次本工具。")
+                else:
+                    warn("Edge 语音可能缺少 ffmpeg。原生安装：sudo apt install ffmpeg；"
+                         "Docker 安装：必须在 AstrBot 容器/镜像中提供 ffmpeg，仅在 Debian 宿主机安装无效。")
             conf["enable"] = False
             upsert_provider(api, conf)
             tts_id = ""
