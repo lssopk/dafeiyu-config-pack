@@ -47,7 +47,8 @@ def read_secret_file(path, key=None):
             k, sep, v = line.replace("：", ":", 1).partition(":")  # 中文冒号也认
             if sep and k.strip().lower() == key.strip().lower():
                 return v.strip()
-    return lines[0].strip()
+        raise ValueError(f"凭据文件 {path} 中找不到字段 {key}，请检查 *_key 配置")
+    return lines[0].strip() if lines else ""
 
 
 def ask(name, prompt, default=None, secret=False, choices=None):
@@ -92,6 +93,8 @@ class Api:
         except urllib.error.HTTPError as e:
             text = e.read().decode("utf-8", "replace")
             code = e.code
+        except urllib.error.URLError as e:
+            return {"status": "error", "message": f"无法连接 {url}: {e.reason}", "_http": 503}
         try:
             out = json.loads(text) if text else {}
         except ValueError:
