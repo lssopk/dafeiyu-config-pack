@@ -1,3 +1,23 @@
+# Debian 13（Trixie）/ GNOME / SSH 支持
+
+现在支持直接在 Debian 13 的 GNOME 桌面或 SSH 终端部署，不必使用 Windows。
+**完整安装步骤请看：[Debian 13 部署指南](deploy/debian13/README.md)。**
+
+已有 AstrBot + NapCat 的用户，克隆仓库后直接运行：
+
+    bash ./导入大肥鱼.sh
+
+从零部署 AstrBot + NapCat 的用户，安装好 Docker Compose 后运行：
+
+    sudo bash deploy/debian13/bootstrap.sh --check
+    sudo bash deploy/debian13/bootstrap.sh --up
+
+> 管理 WebUI 默认仅绑定 127.0.0.1；远程管理建议通过 SSH 隧道访问。
+> 只有 QQ、NapCat、对话模型接通后，才能导入“大肥鱼”配置。
+> Linux Docker 中的本机 Ollama、ffmpeg、SoulX 服务有容器网络/运行时区别，请按部署指南配置。
+
+---
+
 # 大肥鱼配置包
 
 把你已经接上 QQ 的 AstrBot 调成「大肥鱼」：她有自己的性格，会发表情包、发语音，记得你说过的事，隔一阵会主动找你，叫她唱歌她会现编歌词唱一段，心情变了会自己改 QQ 签名，主人让她发空间、改签名她也会照做。
@@ -8,7 +28,7 @@
 
 先按视频把这几步做完：装好 AstrBot 和 NapCat，QQ 小号扫码登上，接好 DeepSeek，在 QQ 上发消息她能回。
 
-## 导入
+## Windows 导入（Linux 参考上面的部署指南）
 
 1. 打开 AstrBot（后台网页能打开就行）。
 2. 双击 `导入大肥鱼.bat`。

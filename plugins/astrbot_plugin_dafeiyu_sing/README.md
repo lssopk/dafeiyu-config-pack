@@ -2,6 +2,39 @@
 
 跟她说「给我唱首歌」「唱个生日歌」，她先回一句「等我开嗓」，过十几到四十秒发来一条语音：把现编的歌词唱出来，曲子从《小星星》《两只老虎》《生日快乐》里挑。
 
+## Debian 13 / GNOME / SSH：本地 SoulX 服务器（可选）
+
+默认豆包云端唱歌 **不需要** 单独启动此服务器。本节只适用于选择 `sing.backend=soulx` 的情况。
+
+在 Debian 13 安装独立 Python 3.12 运行环境（不碰系统 Python 3.13）：
+
+    sudo apt update
+    sudo apt install -y git curl pipx
+    pipx install uv
+    # 若刚装好 uv，请重新登录或执行 ~/.local/bin/uv；确认命令可用后继续
+    cd plugins/astrbot_plugin_dafeiyu_sing/sing_server
+    bash setup_linux.sh
+    bash start_sing_server.sh
+
+默认安装位置为 `~/dafeiyu/sing`，也可以先设置 `DAFEIYU_SING_ROOT` 修改位置。
+模型约 2.8 GB，依赖与 CUDA 版 PyTorch 另外占用磁盘空间。
+建议 NVIDIA 驱动正常（`nvidia-smi`）时使用。
+默认 URL `http://127.0.0.1:18620` 只允许宿主机访问。
+
+如果 AstrBot **运行在 Docker**，无法通过容器内的 `127.0.0.1` 访问宿主机 SoulX。
+本仓库的 Debian 13 Compose 已添加 `host.docker.internal:host-gateway` 映射。
+高级用户可以查出宿主机的 Docker 网关 IPv4：
+
+    ip -4 -o addr show docker0
+
+然后以相应的 Docker 网关 IP 绑定 SoulX（例：`SING_HOST=172.17.0.1 bash start_sing_server.sh`），
+在 AstrBot 插件里把 `server_url` 设置成 `http://host.docker.internal:18620`。
+网关因主机 Docker 配置而异，必须确认容器可达；必要时检查防火墙。
+**不要随意监听 0.0.0.0 并对公网开放 18620**，该 HTTP 唱歌服务未设置访问鉴权。
+如果 AstrBot 原生运行在同一宿主机，保持默认 127.0.0.1 即可。
+
+> Windows 仍按后面的 PowerShell 操作，不受 Linux 入口影响。
+
 ## 默认：豆包唱（不用另开服务）
 
 默认用火山引擎的豆包 Seed Audio 1.0 在云端唱，凭证就是发语音用的那套（豆包语音的 APP ID 和 Access Token）。配置包导入时语音选 3，这个插件会一起装上，什么都不用另外配。
