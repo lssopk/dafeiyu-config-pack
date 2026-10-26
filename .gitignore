@@ -3,3 +3,11 @@ __pycache__/
 .DS_Store
 回答.json
 *.txt.local
+# Local Linux deployment credentials and persistent runtime data
+.env
+.env.*
+!*.env.example
+*.answers.json
+deploy/debian13/data/
+deploy/debian13/napcat/
+deploy/debian13/ntqq/
